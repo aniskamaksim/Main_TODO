@@ -1,0 +1,38 @@
+.App {
+  text-align: center;
+}
+.wrapper {
+  width: 100%;
+  display: flex;
+}
+.main-wrapper {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: #0d606f solid 2px;
+  border-radius: 20px;
+  background-color: lightgrey;
+  margin: 10% 30% 10% 30%;
+}
+.counter {
+  background-color: darkslategray;
+  padding: 10% 15%;
+  margin: 2% 3%;
+  font-size: 3em;
+  color: #DDEEFF;
+  border: #0d606f 2px solid;
+  border-radius: 20px;
+}
+.button_div {
+  width: 28%;
+  padding: 3% 3%;
+  display: flex;
+  flex-direction: row;
+  gap: 25%;
+  justify-content: space-evenly;
+  margin-bottom: 2%;
+  border: #0d606f solid 2px;
+  border-radius: 20px;
+}
