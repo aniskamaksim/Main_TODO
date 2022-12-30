@@ -4,10 +4,14 @@ import {Buttons} from "./Components/Buttons";
 import {Screen} from "./Components/Screen";
 
 function App() {
-    const [counter, setCounter] = useState(0)
+    let [counter, setCounter] = useState<number>(0)
+    let minValue = 0;
+    let maxValue = 5;
+
     const increaseCounter = () => {
-        setCounter(counter + 1)
+        counter < maxValue ? setCounter(counter + 1) : counter = maxValue;
     }
+
     const resetCounter = () => {
         setCounter(0)
     }
@@ -15,21 +19,21 @@ function App() {
     return (
         <div className={'wrapper'}>
             <div className={'main-wrapper'}>
-            <Screen
-                counter={counter}
-            />
-            <div className={'button_div'}>
-                <Buttons
-                    callBack={increaseCounter}
-                    name={'+1'}
-                />
-                <Buttons
-                    callBack={resetCounter}
-                    name={'reset'}
+                <h1>I know your number</h1>
+                <Screen
                     counter={counter}
+                    maxValue={maxValue}
                 />
+                <div className={'button_div'}>
+                    <Buttons
+                        increaseCounter={increaseCounter}
+                        resetCounter={resetCounter}
+                        counter={counter}
+                        minValue={minValue}
+                        maxValue={maxValue}
+                    />
+                </div>
             </div>
-        </div>
         </div>
     );
 }

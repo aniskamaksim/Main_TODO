@@ -1,28 +1,53 @@
-import React, {ButtonHTMLAttributes, DetailedHTMLProps} from 'react';
-import {Button} from "@mui/material";
-type DefaultButtonPropsType = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement>
-type ButtonsPropsType = DefaultButtonPropsType & {
-    callBack: ()=>void
-    name: string
-    counter?: number
-    disabled?: string
+import React from 'react';
+import {UniversalButton} from './UniversalButton'
+
+type ButtonPropsType = {
+    increaseCounter: () => void
+    resetCounter: () => void
+    counter: number
+    minValue: number
+    maxValue: number
 }
 
-export const Buttons = (props: ButtonsPropsType) => {
-    const callBackHandler = () => {
-        props.callBack()
+export const Buttons: React.FC<ButtonPropsType> = (
+    {increaseCounter, resetCounter, maxValue, minValue, counter}) => {
+    const increaseCallBackHandler = () => {
+        increaseCounter()
     }
+    const resetCallBackHandler = () => {
+        resetCounter()
+    }
+    const getAddButtonVariant = counter === 0 ? "contained" : "outlined";
+    const getResetButtonVariant = counter === maxValue ? "contained" : "outlined";
 
     return (
-        <div>
-            <Button
-                variant={props.counter === 0 ? "outlined" : "contained"}
-                onClick={callBackHandler}
-                disabled={props.counter === 0}
-                size={"small"}>
-                {props.name}
-            </Button>
+        <div className={'buttons_div'}>
+            <UniversalButton
+                name={'Increment'}
+                classVariant={getAddButtonVariant}
+                callBack={increaseCallBackHandler}
+                disabled={counter === maxValue}
+            />
+            <UniversalButton
+                name={'Reset'}
+                classVariant={getResetButtonVariant}
+                callBack={resetCallBackHandler}
+                disabled={counter === minValue}
+            />
         </div>
     );
 };
+
+
+/*
+export const Buttons: React.FC <ButtonPropsType> = (
+    {increaseCounter, resetCounter, maxValue, minValue, counter})=>{
+    function here
+    };
+*/
+
+/*
+export const Buttons = (ButtonPropsType) => {
+    function with props. ... here
+};
+*/
