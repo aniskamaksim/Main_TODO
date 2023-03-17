@@ -22,6 +22,7 @@ export type TasksStateType = {
 
 function App() {
     const [todoLists, setTodoLists] = useState<TodoListsType[]>([]);
+    const isTodoListsEmpty = todoLists.length === 0;
     const [tasks, setTasks] = useState<TasksStateType>({});
 
     const removeTask = (todoListId: string, taskId: string) => {
@@ -111,9 +112,9 @@ function App() {
     })
     return (
         <div className={"appDiv"}>
-            <h3>Let's create your first todolist!</h3>
             <UniversalInput callBack={addTodoList}
             />
+            {isTodoListsEmpty ? <h3 style={{color: "purple"}}>Let's create your first todolist!</h3>:""}
             <div className={"MainTodoDiv"}>
                 {todoListsMap}
             </div>

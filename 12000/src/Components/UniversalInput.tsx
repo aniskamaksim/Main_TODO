@@ -42,7 +42,6 @@ export const UniversalInput: FC<UniversalInputType> = (
                            color={error ? "warning" : "secondary"}
                            placeholder={"Enter title here"}
                            type={"text"}
-
                 />
                 <Button variant={"contained"}
                         onClick={onClickHandler}

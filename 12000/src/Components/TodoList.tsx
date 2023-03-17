@@ -85,23 +85,26 @@ export const TodoListComponent: FC<TodoListComponentType> = (
                     />
                 </div>
                 <div>
-                    {isTasksArrayEmpty ? <div>No tasks here</div> : <div>{tasksMap}</div>
-                    }
+                    { isTasksArrayEmpty ?
+                        <div className={"tasksDisclaimer"}>No tasks here. Tap or click!</div> : <div>{tasksMap}</div>}
                 </div>
             </div>
             <div className={"buttons"}>
                 <Button variant={"contained"}
                         size={"small"}
                         color={"secondary"}
-                        onClick={changeTodoListFilterHandler("all")}>All</Button>
+                        onClick={changeTodoListFilterHandler("all")}
+                        disabled={isTasksArrayEmpty}>All</Button>
                 <Button variant={"contained"}
                         size={"small"}
                         color={"secondary"}
-                        onClick={changeTodoListFilterHandler("active")}>Active</Button>
+                        onClick={changeTodoListFilterHandler("active")}
+                        disabled={isTasksArrayEmpty}>Active</Button>
                 <Button variant={"contained"}
                         size={"small"}
                         color={"secondary"}
-                        onClick={changeTodoListFilterHandler("completed")}>Completed</Button>
+                        onClick={changeTodoListFilterHandler("completed")}
+                        disabled={isTasksArrayEmpty}>Completed</Button>
 
             </div>
         </>
