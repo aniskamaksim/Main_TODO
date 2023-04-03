@@ -89,3 +89,9 @@ li {
     text-align: center;
     color: purple;
 }
+.credits {
+    margin-top: 2em;
+    color: grey;
+    font-size: large;
+    font-style: italic;
+}

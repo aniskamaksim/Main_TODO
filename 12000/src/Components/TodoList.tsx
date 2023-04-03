@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import {EditableSpan} from "./EditableSpan";
+import Paper from "@mui/material/Paper";
 
 type TodoListComponentType = {
     todoListId: string,
@@ -34,7 +35,7 @@ export const TodoListComponent: FC<TodoListComponentType> = (
         changeTodoListTitle,
     }
 ) => {
-    const isTasksArrayEmpty = tasks.length === 0;
+
     const changeTodoListFilterHandler = (newFilter: FilterValuesType) => {
         return () => changeTodoListFilter(todoListId, newFilter);
     }
@@ -47,7 +48,10 @@ export const TodoListComponent: FC<TodoListComponentType> = (
 
     const tasksMap = tasks.map((e) => {
         return (
-            <>
+            <Paper key={e.taskId}
+                   sx={{backgroundColor: "#f2f2f2", height: "fit-content"}}
+                   elevation={0}
+            >
                 <TasksComponent key={e.taskId}
                                 todoListId={todoListId}
                                 tasks={tasks}
@@ -59,9 +63,10 @@ export const TodoListComponent: FC<TodoListComponentType> = (
                                 changeTaskTitle={changeTaskTitle}
 
                 />
-            </>
+            </Paper>
         )
-    })
+    });
+    const isTasksArrayEmpty = tasks.length === 0;
     return (
         <>
             <div className={"todoListDiv"}>
@@ -84,9 +89,10 @@ export const TodoListComponent: FC<TodoListComponentType> = (
                                     callBack={addTaskHandler}
                     />
                 </div>
-                <div>
-                    { isTasksArrayEmpty ?
-                        <div className={"tasksDisclaimer"}>No tasks here. Tap or click!</div> : <div>{tasksMap}</div>}
+                <div key={todoListId}>
+                    {isTasksArrayEmpty ?
+                        <div className={"tasksDisclaimer"}><h3>No tasks here yet.</h3></div> :
+                        <div>{tasksMap}</div>}
                 </div>
             </div>
             <div className={"buttons"}>
