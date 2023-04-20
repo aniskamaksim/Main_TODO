@@ -1,58 +1,52 @@
-import React, {FC} from 'react';
-import {TasksType} from "../App";
+import React, {FC, memo, useCallback} from 'react';
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from '@mui/icons-material/Delete';
 import {EditableSpan} from "./EditableSpan";
+import {ChangeTaskStatusAC, ChangeTaskTitleAC, RemoveTaskAC} from "../state/tasks-reducers";
+import {useDispatch} from "react-redux";
 
 type TasksComponentType = {
     todoListId: string,
-    tasks: TasksType[],
     taskId: string,
     title: string,
     taskStatus: boolean,
-    removeTask: (todoListId: string, taskId: string) => void,
-    changeTaskStatus: (todoListId: string, taskId: string) => void,
-    changeTaskTitle: (todoListId: string, taskId: string, newTaskTitle: string) => void
 }
-export const TasksComponent: FC<TasksComponentType> = (
+export const TasksComponent: FC<TasksComponentType> = memo((
     {
         todoListId,
-        tasks,
         taskId,
         title,
         taskStatus,
-        removeTask,
-        changeTaskStatus,
-        changeTaskTitle
     }
 ) => {
-    const removeTaskHandler = () => {
-        removeTask(todoListId, taskId);
-    }
-    const changeTaskStatusHandler = () => {
-        changeTaskStatus(todoListId, taskId);
-    }
-    const changeTaskTitleHandler = (newTitle: string) => {
-        changeTaskTitle(todoListId, taskId, newTitle)
-    }
+    const dispatch = useDispatch();
+    const removeTask = useCallback(() => {
+        dispatch(RemoveTaskAC(todoListId, taskId));
+    }, [dispatch, todoListId, taskId])
+    const changeTaskStatus = useCallback(() => {
+        dispatch(ChangeTaskStatusAC(todoListId, taskId));
+    }, [dispatch, todoListId, taskId])
+    const changeTaskTitle = useCallback((newTaskTitle: string) => {
+        dispatch(ChangeTaskTitleAC(todoListId, taskId, newTaskTitle));
+    }, [dispatch, todoListId, taskId])
     return (
         <li className={"tasksDiv"}>
             <div className="checkBox_title">
                 <input type="checkbox"
                        checked={taskStatus}
-                       onChange={changeTaskStatusHandler}
+                       onChange={changeTaskStatus}
                 />
                 <div className={taskStatus ? "doneTaskStatus" : "tasksFont"}>
                     <EditableSpan oldTitle={title}
-                                  callBack={changeTaskTitleHandler}
+                                  callBack={changeTaskTitle}
                     /></div>
             </div>
             <IconButton aria-label="delete"
                         size="small"
-                        onClick={removeTaskHandler}
+                        onClick={removeTask}
             >
                 <DeleteIcon fontSize="small"/>
             </IconButton>
         </li>
     );
-};
+});

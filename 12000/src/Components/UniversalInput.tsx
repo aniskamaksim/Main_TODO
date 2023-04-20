@@ -1,11 +1,11 @@
-import React, {KeyboardEvent, ChangeEvent, FC, useState} from 'react';
+import React, {KeyboardEvent, ChangeEvent, FC, useState, memo, useCallback} from 'react';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 type UniversalInputType = {
     callBack: (title: string) => void
 }
-export const UniversalInput: FC<UniversalInputType> = (
+export const UniversalInput: FC<UniversalInputType> = memo((
     {callBack}
 ) => {
     const [text, setText] = useState<string>("");
@@ -15,14 +15,14 @@ export const UniversalInput: FC<UniversalInputType> = (
         setText(event.currentTarget.value);
         setError(false);
     }
-    const onClickHandler = () => {
+    const onClickHandler = useCallback(() => {
         if (correctTitle) {
             callBack(text);
         } else {
             setError(true);
         }
         setText("");
-    }
+    }, [callBack, text])
     const onKeyDownHandler = (event: KeyboardEvent) => {
         event.key === "Enter" && onClickHandler();
     }
@@ -51,4 +51,4 @@ export const UniversalInput: FC<UniversalInputType> = (
             </div>
         </>
     );
-};
+});

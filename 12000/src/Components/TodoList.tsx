@@ -1,67 +1,67 @@
-import React, {FC} from 'react';
-import {FilterValuesType, TasksType} from "../App"
+import React, {FC, memo, useCallback} from 'react';
 import {TasksComponent} from "./Tasks";
 import {UniversalInput} from "./UniversalInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
 import {EditableSpan} from "./EditableSpan";
 import Paper from "@mui/material/Paper";
+import {useDispatch, useSelector} from "react-redux";
+import {rootReducerType} from "../state/store";
+import {
+    ChangeTodoListFilterAC,
+    ChangeTodoListTitleAC, FilterValuesType,
+    RemoveTodoListAC,
+    TodoListsType
+} from "../state/todoList-reducers";
+import {AddTaskAC, TasksType} from "../state/tasks-reducers";
+import {Buttons} from "./Buttons";
 
 type TodoListComponentType = {
-    todoListId: string,
-    title: string,
-    filter: FilterValuesType,
-    tasks: TasksType[],
-    removeTask: (todoListId: string, taskId: string) => void,
-    changeTaskStatus: (todoListId: string, taskId: string) => void,
-    addTask: (todoListId: string, newTaskTitle: string) => void,
-    changeTodoListFilter: (todoListId: string, newFilterValue: FilterValuesType) => void,
-    removeTodoList: (todoListId: string) => void,
-    changeTaskTitle: (todoListId: string, taskId: string, newTaskTitle: string) => void,
-    changeTodoListTitle: (todoListId: string, newTodoListTitle: string) => void
+    todolist: TodoListsType
 }
-export const TodoListComponent: FC<TodoListComponentType> = (
-    {
-        todoListId,
-        title,
-        tasks,
-        removeTask,
-        changeTaskStatus,
-        addTask,
-        changeTodoListFilter,
-        removeTodoList,
-        changeTaskTitle,
-        changeTodoListTitle,
-    }
+export const TodoListComponent: FC<TodoListComponentType> = memo((
+    {todolist}
 ) => {
+    const dispatch = useDispatch();
+    const {todoListId, title, filter} = todolist
+    const tasks = useSelector<rootReducerType, TasksType[]>((state) => state.tasks[todoListId])
 
-    const changeTodoListFilterHandler = (newFilter: FilterValuesType) => {
-        return () => changeTodoListFilter(todoListId, newFilter);
-    }
-    const changeTodoListTitleHandler = (newTitle: string) => {
-        changeTodoListTitle(todoListId, newTitle);
-    }
-    const addTaskHandler = (title: string) => {
-        addTask(todoListId, title)
-    }
+    let filteredTasks = tasks;
+    const getFilterValue = useCallback(() => {
+        return (
+            filter === "active" ?
+                filteredTasks = tasks.filter(e => !e.isDone) :
+                filter === "completed" ?
+                    filteredTasks = tasks.filter(e => e.isDone) :
+                    filteredTasks
+        )
+    }, [tasks, filter])
+    filteredTasks = getFilterValue();
 
-    const tasksMap = tasks.map((e) => {
+    const addTask = useCallback((newTaskTitle: string) => {
+        dispatch(AddTaskAC(todoListId, newTaskTitle))
+    }, [dispatch, todoListId])
+
+    const changeTodoListFilterHandler = useCallback((newFilter: FilterValuesType) => {
+        dispatch(ChangeTodoListFilterAC(todoListId, newFilter));
+    }, [todoListId, dispatch])
+    const changeTodoListTitleHandler = useCallback((newTitle: string) => {
+        dispatch(ChangeTodoListTitleAC(todoListId, newTitle));
+    }, [dispatch, todoListId])
+    const removeTodoListHandler = useCallback(() => {
+        dispatch(RemoveTodoListAC(todoListId));
+    }, [dispatch, todoListId]);
+
+    const tasksMap = filteredTasks.map((e) => {
         return (
             <Paper key={e.taskId}
                    sx={{backgroundColor: "#f2f2f2", height: "fit-content"}}
                    elevation={0}
             >
-                <TasksComponent key={e.taskId}
-                                todoListId={todoListId}
-                                tasks={tasks}
+                <TasksComponent todoListId={todoListId}
                                 taskId={e.taskId}
                                 title={e.title}
                                 taskStatus={e.isDone}
-                                removeTask={removeTask}
-                                changeTaskStatus={changeTaskStatus}
-                                changeTaskTitle={changeTaskTitle}
-
                 />
             </Paper>
         )
@@ -77,7 +77,7 @@ export const TodoListComponent: FC<TodoListComponentType> = (
                         /></h3>
                         <IconButton aria-label="delete"
                                     size="medium"
-                                    onClick={() => removeTodoList(todoListId)}
+                                    onClick={removeTodoListHandler}
                                     color={"secondary"}
                         >
                             <DeleteIcon fontSize="inherit"/>
@@ -85,34 +85,37 @@ export const TodoListComponent: FC<TodoListComponentType> = (
                     </div>
                 </div>
                 <div>
-                    <UniversalInput key={todoListId}
-                                    callBack={addTaskHandler}
+                    <UniversalInput key={todolist.todoListId}
+                                    callBack={addTask}
                     />
                 </div>
-                <div key={todoListId}>
+                <div key={todolist.todoListId}>
                     {isTasksArrayEmpty ?
                         <div className={"tasksDisclaimer"}><h3>No tasks here yet.</h3></div> :
                         <div>{tasksMap}</div>}
                 </div>
             </div>
             <div className={"buttons"}>
-                <Button variant={"contained"}
-                        size={"small"}
-                        color={"secondary"}
-                        onClick={changeTodoListFilterHandler("all")}
-                        disabled={isTasksArrayEmpty}>All</Button>
-                <Button variant={"contained"}
-                        size={"small"}
-                        color={"secondary"}
-                        onClick={changeTodoListFilterHandler("active")}
-                        disabled={isTasksArrayEmpty}>Active</Button>
-                <Button variant={"contained"}
-                        size={"small"}
-                        color={"secondary"}
-                        onClick={changeTodoListFilterHandler("completed")}
-                        disabled={isTasksArrayEmpty}>Completed</Button>
+                <Buttons variant={"contained"}
+                         size={"small"}
+                         color={"secondary"}
+                         onClick={() => changeTodoListFilterHandler("all")}
+                         disabled={filter === "all"}
+                         title={"All"}/>
+                <Buttons variant={"contained"}
+                         size={"small"}
+                         color={"secondary"}
+                         onClick={() => changeTodoListFilterHandler("active")}
+                         disabled={filter === "active"}
+                         title={"Active"}/>
+                <Buttons variant={"contained"}
+                         size={"small"}
+                         color={"secondary"}
+                         onClick={() => changeTodoListFilterHandler("completed")}
+                         disabled={filter === "completed"}
+                         title={"Completed"}/>
 
             </div>
         </>
     );
-};
+});

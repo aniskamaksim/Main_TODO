@@ -1,13 +1,14 @@
-import React, {KeyboardEvent, ChangeEvent, FC, useState} from 'react';
+import React, {KeyboardEvent, ChangeEvent, FC, useState, memo, useCallback} from 'react';
 import TextField from "@mui/material/TextField";
 
 type EditableSpanType = {
     callBack: (newTitle: string) => void
     oldTitle: string
 }
-export const EditableSpan: FC<EditableSpanType> = (
+export const EditableSpan: FC<EditableSpanType> = memo((
     {oldTitle, callBack}
 ) => {
+
     const [title, setTitle] = useState<string>(oldTitle);
     const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -17,10 +18,10 @@ export const EditableSpan: FC<EditableSpanType> = (
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.currentTarget.value)
     }
-    const callBackHandler = () => {
+    const callBackHandler = useCallback(() => {
         callBack(title);
         editModeSwitcher();
-    }
+    }, [callBack, editModeSwitcher])
     const onKeyDownHandler = (event: KeyboardEvent) => {
         if (event.key === "Enter") {
             callBackHandler();
@@ -46,4 +47,4 @@ export const EditableSpan: FC<EditableSpanType> = (
             }
         </>
     );
-};
+});
